@@ -293,6 +293,34 @@ struct BitOr_op
   }
 };
 
+__host__ __device__ __forceinline__
+void getRayCastInit(Environment::NodeProb::RayCastType* const init)
+{
+  init->value = INITIAL_PROBABILITY;
+}
+
+__host__ __device__ __forceinline__
+void getRayCastInit(Environment::InnerNode::RayCastType* const init)
+{
+  init->value = 0;
+}
+
+__device__ __forceinline__
+bool isValidValue(const Environment::NodeProb::RayCastType a)
+{
+  Environment::NodeProb::RayCastType init;
+  getRayCastInit(&init);
+  return a.value != init.value;
+}
+
+__device__ __forceinline__
+bool isValidValue(const Environment::InnerNode::RayCastType a)
+{
+  Environment::InnerNode::RayCastType init;
+  getRayCastInit(&init);
+  return a.value != init.value;
+}
+
 // Needed for checking the NTree sequentially
 __host__ __device__
 bool isValidParentStatus(void* nodes, const uint32_t node_count, const uint8_t level,
@@ -473,12 +501,6 @@ __forceinline__ void updateNode(Environment::InnerNode* node, void* const childP
   setNode(node, childPtr, set_basic_data, reset_basic_data);
 }
 
-__host__ __device__ __forceinline__
-void getRayCastInit(Environment::InnerNode::RayCastType* const init)
-{
-  init->value = 0;
-}
-
 __device__ __forceinline__
 void handleRayHit(Environment::InnerNode::RayCastType* a, int32_t x, int32_t y, int32_t z)
 {
@@ -503,14 +525,6 @@ bool isPackingPossible(const Environment::InnerNode::RayCastType max,
   Environment::InnerNode::RayCastType init;
   getRayCastInit(&init);
   return max.value == min.value && min.value != init.value;
-}
-
-__device__ __forceinline__
-bool isValidValue(const Environment::InnerNode::RayCastType a)
-{
-  Environment::InnerNode::RayCastType init;
-  getRayCastInit(&init);
-  return a.value != init.value;
 }
 
 __device__ __forceinline__
@@ -974,12 +988,6 @@ void updateNode(Environment::InnerNodeProb* node, void* const childPtr,
   }
 }
 
-__host__ __device__ __forceinline__
-void getRayCastInit(Environment::NodeProb::RayCastType* const init)
-{
-  init->value = INITIAL_PROBABILITY;
-}
-
 __device__ __forceinline__
 void handleRayHit(Environment::NodeProb::RayCastType* a, int32_t x, int32_t y, int32_t z)
 {
@@ -996,14 +1004,6 @@ bool isPackingPossible(const Environment::NodeProb::RayCastType max,
                        const Environment::NodeProb::RayCastType min)
 {
   return (max.value - min.value) == 0;
-}
-
-__device__ __forceinline__
-bool isValidValue(const Environment::NodeProb::RayCastType a)
-{
-  Environment::NodeProb::RayCastType init;
-  getRayCastInit(&init);
-  return a.value != init.value;
 }
 
 struct _Max_op
